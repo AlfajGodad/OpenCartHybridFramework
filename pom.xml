@@ -4,96 +4,231 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>OpenCartHybridFramework</groupId>
-  <artifactId>OpenCartHybridFramework</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  
-  <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.15.0</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.5.3</version>
-          <configuration>
-          <suiteXmlFiles>
-          <suiteXmlFile>master.xml</suiteXmlFile>
-          </suiteXmlFiles>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  
-  
-  </build>
-  
-  
+   <groupId>com.opencart.automation</groupId>
+    <artifactId>opencart-hybrid-framework</artifactId>
+    <version>1.0.0</version>
+
+    <name>OpenCart Hybrid Automation Framework</name>
+
+    <properties>
+
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+
+        <project.build.sourceEncoding>
+            UTF-8
+        </project.build.sourceEncoding>
+
+    </properties>
+
+
     <dependencies>
 
-    <!-- Selenium -->
-    <dependency>
-        <groupId>org.seleniumhq.selenium</groupId>
-        <artifactId>selenium-java</artifactId>
-        <version>4.18.1</version>
-    </dependency>
+        <!-- Selenium WebDriver -->
+        <dependency>
 
-    <!-- TestNG -->
-    <dependency>
-        <groupId>org.testng</groupId>
-        <artifactId>testng</artifactId>
-        <version>7.9.0</version>
-        <scope>test</scope>
-    </dependency>
+            <groupId>
+                org.seleniumhq.selenium
+            </groupId>
 
-    <!-- Apache POI (ONLY THIS, no separate poi needed) -->
-    <dependency>
-        <groupId>org.apache.poi</groupId>
-        <artifactId>poi-ooxml</artifactId>
-        <version>5.2.5</version>
-    </dependency>
+            <artifactId>
+                selenium-java
+            </artifactId>
 
-    <dependency>
-    <groupId>org.apache.logging.log4j</groupId>
-    <artifactId>log4j-api</artifactId>
-    <version>2.22.1</version>
-</dependency>
+            <version>
+                4.18.1
+            </version>
 
-<dependency>
-    <groupId>org.apache.logging.log4j</groupId>
-    <artifactId>log4j-core</artifactId>
-    <version>2.22.1</version>
-</dependency>
+        </dependency>
 
-    <!-- WebDriverManager -->
-   <dependency>
-        <groupId>io.github.bonigarcia</groupId>
-        <artifactId>webdrivermanager</artifactId>
-        <version>5.9.2</version>
-    </dependency>
-    
-    <dependency>
-    <groupId>com.aventstack</groupId>
-    <artifactId>extentreports</artifactId>
-    <version>5.0.9</version>
-</dependency>
 
-<dependency>
-    <groupId>org.apache.commons</groupId>
-    <artifactId>commons-lang3</artifactId>
-    <version>3.15.0</version>
-</dependency>
+        <!-- TestNG -->
+        <dependency>
 
-<dependency>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-simple</artifactId>
-    <version>1.7.36</version>
-</dependency>
+            <groupId>
+                org.testng
+            </groupId>
 
-</dependencies>
+            <artifactId>
+                testng
+            </artifactId>
+
+            <version>
+                7.9.0
+            </version>
+
+            <scope>
+                test
+            </scope>
+
+        </dependency>
+
+
+        <!-- Apache POI -->
+        <dependency>
+
+            <groupId>
+                org.apache.poi
+            </groupId>
+
+            <artifactId>
+                poi-ooxml
+            </artifactId>
+
+            <version>
+                5.2.5
+            </version>
+
+        </dependency>
+
+
+        <!-- Log4j API -->
+        <dependency>
+
+            <groupId>
+                org.apache.logging.log4j
+            </groupId>
+
+            <artifactId>
+                log4j-api
+            </artifactId>
+
+            <version>
+                2.22.1
+            </version>
+
+        </dependency>
+
+
+        <!-- Log4j Core -->
+        <dependency>
+
+            <groupId>
+                org.apache.logging.log4j
+            </groupId>
+
+            <artifactId>
+                log4j-core
+            </artifactId>
+
+            <version>
+                2.22.1
+            </version>
+
+        </dependency>
+
+
+        <!-- Extent Reports -->
+        <dependency>
+
+            <groupId>
+                com.aventstack
+            </groupId>
+
+            <artifactId>
+                extentreports
+            </artifactId>
+
+            <version>
+                5.0.9
+            </version>
+
+        </dependency>
+
+
+        <!-- Apache Commons Lang -->
+        <dependency>
+
+            <groupId>
+                org.apache.commons
+            </groupId>
+
+            <artifactId>
+                commons-lang3
+            </artifactId>
+
+            <version>
+                3.15.0
+            </version>
+
+        </dependency>
+
+
+        <!-- Apache Commons IO -->
+        <dependency>
+
+            <groupId>
+                commons-io
+            </groupId>
+
+            <artifactId>
+                commons-io
+            </artifactId>
+
+            <version>
+                2.16.1
+            </version>
+
+        </dependency>
+
+    </dependencies>
+
+
+    <build>
+
+        <plugins>
+
+            <!-- Maven Compiler -->
+
+            <plugin>
+
+                <groupId>
+                    org.apache.maven.plugins
+                </groupId>
+
+                <artifactId>
+                    maven-compiler-plugin
+                </artifactId>
+
+                <version>
+                    3.13.0
+                </version>
+
+            </plugin>
+
+
+            <!-- Maven Surefire -->
+
+            <plugin>
+
+                <groupId>
+                    org.apache.maven.plugins
+                </groupId>
+
+                <artifactId>
+                    maven-surefire-plugin
+                </artifactId>
+
+                <version>
+                    3.5.3
+                </version>
+
+                <configuration>
+
+                    <suiteXmlFiles>
+
+                        <suiteXmlFile>
+                            master.xml
+                        </suiteXmlFile>
+
+                    </suiteXmlFiles>
+
+                </configuration>
+
+            </plugin>
+
+        </plugins>
+
+    </build>
 
 </project>
