@@ -8,28 +8,63 @@ import pageObjects.LoginPage;
 import pageObjects.MyAccountPage;
 import testBase.BaseClass;
 
-public class TC002_LoginPage extends BaseClass{
-	@Test(groups= {"Regression","Master"})
-	public void loginTest() {
-		try {
-		HomePage hp= new HomePage(driver);
-		logger.info("*** Test TC002_LoginPage started ***");
-		hp.clickMyAccount();
-		hp.clickLogin();
-		LoginPage lp= new LoginPage(driver);
-		logger.info("Entering the credentials");
-		lp.putUsername(p.getProperty("userName"));
-		lp.putPassword(p.getProperty("password"));
-		lp.clickLogin();
-		MyAccountPage myAcc= new MyAccountPage(driver);
-		String msg= myAcc.getMyAccount();
-		//String msg1=BaseClass.screenCapture("NewImg");
-		//System.out.println(msg1);
-		Assert.assertEquals(msg, "My Account");
-		logger.info("*** Test TC002_LoginPage Ended ***");
-		}catch(Exception e) {
-			Assert.fail();
-		}
-	}
+public class TC002_LoginPage extends BaseClass {
 
+    @Test
+    public void verifyLogin() {
+
+        logger.info("Starting login test");
+
+        HomePage homePage =
+                new HomePage(driver);
+
+        homePage.clickMyAccount();
+        homePage.clickLogin();
+
+        LoginPage loginPage =
+                new LoginPage(driver);
+
+        String email =
+                System.getenv("OPENCART_USERNAME");
+
+        String password =
+                System.getenv("OPENCART_PASSWORD");
+
+        if (email == null || email.isBlank()) {
+            email =
+                System.getProperty(
+                    "opencart.username"
+                );
+        }
+
+        if (password == null || password.isBlank()) {
+            password =
+                System.getProperty(
+                    "opencart.password"
+                );
+        }
+
+        if (email == null || password == null) {
+
+            Assert.fail(
+                "Login credentials are not configured. "
+                + "Use OPENCART_USERNAME / OPENCART_PASSWORD "
+                + "or Maven -D properties."
+            );
+        }
+
+        loginPage.enterEmail(email);
+        loginPage.enterPassword(password);
+        loginPage.clickLogin();
+
+        MyAccountPage myAccountPage =
+                new MyAccountPage(driver);
+
+        Assert.assertTrue(
+                myAccountPage.isMyAccountDisplayed(),
+                "Login failed - My Account page was not displayed"
+        );
+
+        logger.info("Login test passed");
+    }
 }

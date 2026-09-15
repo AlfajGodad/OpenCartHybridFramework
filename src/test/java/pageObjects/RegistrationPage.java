@@ -4,62 +4,65 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-public class RegistrationPage extends BasePage{
-	
-	public RegistrationPage(WebDriver driver) {
-		super(driver);
-	}
-	
-	@FindBy(xpath="//input[@id='input-firstname']")
-	WebElement txtFirstname;
-	@FindBy(xpath="//input[@id='input-lastname']")
-	WebElement txtLastname;
-	@FindBy(xpath="//input[@id='input-email']")
-	WebElement txtEmail;
-	@FindBy(xpath="//input[@id='input-telephone']")
-	WebElement txtTelephone;
-	@FindBy(xpath="//input[@id='input-password']")
-	WebElement txtPassword;
-	@FindBy(xpath="//input[@id='input-confirm']")
-	WebElement txtConfirmPassword;
-	@FindBy(xpath="//label[normalize-space()='Yes']")
-	WebElement radioNewsletter;
-	@FindBy(xpath="//input[@name='agree']")
-	WebElement chkPolicy;
-	@FindBy(xpath="//input[@value='Continue']")
-	WebElement btnContinue;
-	@FindBy(xpath="//h1[normalize-space()='Your Account Has Been Created!']")
-	public WebElement msgSuccess;
-	
-	public void setFirstName(String name) {
-		txtFirstname.sendKeys(name);
-	}
-	public void setLastName(String Lname) {
-		txtLastname.sendKeys(Lname);
-	}
-	public void setEmail(String email) {
-		txtEmail.sendKeys(email);
-	}
-	public void setTelephone(String num) {
-		txtTelephone.sendKeys(num);
-	}
-	public void setPassword(String pass) {
-		txtPassword.sendKeys(pass);
-	}
-	public void setConfirmPassword(String pass) {
-		txtConfirmPassword.sendKeys(pass);
-	}
-	public void selectNewsLetter() {
-		radioNewsletter.click();
-	}
-	public void checkPolicy() {
-		chkPolicy.click();
-	}
-	public void clickContinue() {
-		btnContinue.click();
-	}
-	public String getSuccessMsg() {
-		return msgSuccess.getText();
-	}
+public class RegistrationPage extends BasePage {
 
+    public RegistrationPage(WebDriver driver) {
+        super(driver);
+    }
+
+    @FindBy(id = "input-firstname")
+    private WebElement txtFirstName;
+
+    @FindBy(id = "input-lastname")
+    private WebElement txtLastName;
+
+    @FindBy(id = "input-email")
+    private WebElement txtEmail;
+
+    @FindBy(id = "input-telephone")
+    private WebElement txtTelephone;
+
+    @FindBy(id = "input-password")
+    private WebElement txtPassword;
+
+    @FindBy(id = "input-confirm")
+    private WebElement txtConfirmPassword;
+
+    @FindBy(name = "agree")
+    private WebElement chkPrivacyPolicy;
+
+    @FindBy(xpath = "//input[@value='Continue']")
+    private WebElement btnContinue;
+
+    public void setFirstName(String firstName) {
+        type(txtFirstName, firstName);
+    }
+
+    public void setLastName(String lastName) {
+        type(txtLastName, lastName);
+    }
+
+    public void setEmail(String email) {
+        type(txtEmail, email);
+    }
+
+    public void setTelephone(String telephone) {
+        type(txtTelephone, telephone);
+    }
+
+    public void setPassword(String password) {
+        type(txtPassword, password);
+    }
+
+    public void setConfirmPassword(String password) {
+        type(txtConfirmPassword, password);
+    }
+
+    public void acceptPrivacyPolicy() {
+        click(chkPrivacyPolicy);
+    }
+
+    public void clickContinue() {
+        click(btnContinue);
+    }
 }
