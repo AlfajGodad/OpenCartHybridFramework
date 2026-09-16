@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+
   pull_request:
     branches:
       - master
@@ -32,6 +33,22 @@ jobs:
             -Dopencart.username="${{ secrets.OPENCART_USERNAME }}" \
             -Dopencart.password="${{ secrets.OPENCART_PASSWORD }}"
 
+      - name: Upload CI Screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-homepage-screenshot
+          path: target/ci-screenshots/
+          if-no-files-found: warn
+
+      - name: Upload Surefire Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: target/surefire-reports/
+          if-no-files-found: warn
+
       - name: Upload Extent Report
         if: always()
         uses: actions/upload-artifact@v4
@@ -41,7 +58,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Upload Failure Screenshots
-        if: failure()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: failure-screenshots
