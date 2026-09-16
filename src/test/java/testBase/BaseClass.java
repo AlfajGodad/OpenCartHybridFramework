@@ -27,6 +27,10 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.firefox.FirefoxOptions;
+
 public class BaseClass {
 
     public static WebDriver driver;
@@ -74,9 +78,22 @@ public class BaseClass {
         }
 
         driver.manage().deleteAllCookies();
-        driver.manage().window().maximize();
 
-        driver.get(p.getProperty("appUrl"));
+        boolean isCI =
+                "true".equalsIgnoreCase(
+                        System.getenv("CI")
+                );
+
+        if (!isCI) {
+
+            driver.manage()
+                    .window()
+                    .maximize();
+        }
+
+        driver.get(
+                p.getProperty("appUrl")
+        );
 
         logger.info(
                 "Application launched: "
@@ -85,23 +102,92 @@ public class BaseClass {
 
     private WebDriver initializeLocalDriver(String browser) {
 
+        /*
+         * GitHub Actions automatically provides
+         * the CI environment variable.
+         */
+        boolean isCI =
+                "true".equalsIgnoreCase(
+                        System.getenv("CI")
+                );
+
+        logger.info("Running in CI environment: " + isCI);
+
         switch (browser.toLowerCase()) {
 
             case "chrome":
+
                 logger.info("Launching Chrome browser");
-                return new ChromeDriver();
+
+                ChromeOptions chromeOptions =
+                        new ChromeOptions();
+
+                if (isCI) {
+
+                    logger.info(
+                            "Running Chrome in headless mode"
+                    );
+
+                    chromeOptions.addArguments(
+                            "--headless=new",
+                            "--no-sandbox",
+                            "--disable-dev-shm-usage",
+                            "--window-size=1920,1080"
+                    );
+                }
+
+                return new ChromeDriver(
+                        chromeOptions
+                );
+
 
             case "edge":
+
                 logger.info("Launching Edge browser");
-                return new EdgeDriver();
+
+                EdgeOptions edgeOptions =
+                        new EdgeOptions();
+
+                if (isCI) {
+
+                    edgeOptions.addArguments(
+                            "--headless=new",
+                            "--no-sandbox",
+                            "--disable-dev-shm-usage",
+                            "--window-size=1920,1080"
+                    );
+                }
+
+                return new EdgeDriver(
+                        edgeOptions
+                );
+
 
             case "firefox":
+
                 logger.info("Launching Firefox browser");
-                return new FirefoxDriver();
+
+                FirefoxOptions firefoxOptions =
+                        new FirefoxOptions();
+
+                if (isCI) {
+
+                    firefoxOptions.addArguments(
+                            "-headless"
+                    );
+                }
+
+                return new FirefoxDriver(
+                        firefoxOptions
+                );
+
 
             default:
+
                 throw new IllegalArgumentException(
-                        "Unsupported browser: " + browser);
+                        "Unsupported browser: "
+                                + browser
+                );
         }
     }
 
