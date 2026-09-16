@@ -1,13 +1,18 @@
 # OpenCart Selenium Hybrid Automation Framework
 
-A Selenium-based Hybrid Test Automation Framework developed using **Java, TestNG, Maven, Page Object Model (POM), Apache POI, and Extent Reports**.
+A production-style Selenium Hybrid Test Automation Framework built using **Java, Selenium WebDriver, TestNG, Maven, Page Object Model (POM), Apache POI, Extent Reports, Log4j2, Selenium Grid, and GitHub Actions**.
 
-The framework automates key functional workflows of the OpenCart demo e-commerce application and demonstrates reusable, maintainable, and data-driven UI automation practices.
+The framework automates key functional workflows of the OpenCart demo e-commerce application and demonstrates scalable, reusable, maintainable, data-driven, and CI-ready UI automation practices.
+
+---
 
 ## Application Under Test
 
-**OpenCart Demo Application**  
+**OpenCart Demo Application**
+
 https://tutorialsninja.com/demo/
+
+---
 
 ## Tech Stack
 
@@ -20,9 +25,12 @@ https://tutorialsninja.com/demo/
 | Page Object Model | Test design pattern |
 | Apache POI | Excel test-data handling |
 | Extent Reports | HTML test reporting |
-| Log4j2 | Logging |
+| Log4j2 | Execution logging |
 | Git & GitHub | Version control |
-| Selenium Grid | Remote/cross-browser execution |
+| GitHub Actions | CI/CD automation |
+| Selenium Grid | Remote and cross-browser execution |
+
+---
 
 ## Framework Features
 
@@ -31,16 +39,23 @@ https://tutorialsninja.com/demo/
 - Data-driven testing using Excel
 - TestNG DataProvider
 - Reusable explicit wait methods
+- Reusable Selenium page actions
 - Cross-browser support
 - Local and Selenium Grid execution
 - Maven-based test execution
-- Extent HTML reports
+- Extent HTML reporting
 - Automatic screenshots for failed tests
-- Log4j2 logging
+- Log4j2 execution logging
 - Positive and negative test scenarios
 - Environment-based credential management
-- Reusable page actions
+- Maven system-property credential support
 - TestNG XML suite management
+- GitHub Actions CI/CD integration
+- Automated Selenium execution in CI
+- Headless Chrome execution in GitHub Actions
+- Secure credential management using GitHub Actions Secrets
+
+---
 
 ## Automated Test Scenarios
 
@@ -59,10 +74,29 @@ The framework currently covers the following functional scenarios:
 
 The data-driven login test executes multiple datasets, so the total number of TestNG executions may be greater than the number of test classes.
 
+### Latest Verified CI Execution
+
+```text
+Tests run: 9
+Failures: 0
+Errors: 0
+Skipped: 0
+
+BUILD SUCCESS
+```
+
+The complete Selenium suite has been successfully executed through GitHub Actions.
+
+---
+
 ## Project Structure
 
 ```text
 OpenCartHybridFramework/
+│
+├── .github/
+│   └── workflows/
+│       └── selenium-test.yml
 │
 ├── src/
 │   ├── test/
@@ -112,27 +146,86 @@ OpenCartHybridFramework/
 └── README.md
 ```
 
+---
+
+## Framework Architecture
+
+The framework follows a layered automation design to separate test logic, page interactions, configuration, test data, and utilities.
+
+```text
+                    TestNG Test Cases
+                           │
+                           ▼
+                      Page Objects
+                           │
+                           ▼
+                        BasePage
+                           │
+                           ▼
+                  Selenium WebDriver
+                           │
+                           ▼
+                 OpenCart Application
+
+            ┌──────────────┴──────────────┐
+            │                             │
+      Test Data / Excel             Configuration
+       Apache POI                  config.properties
+            │
+            ▼
+       DataProvider
+
+Utilities:
+- Extent Reports
+- Screenshots
+- Log4j2 Logging
+- Random Test Data
+```
+
+This separation helps improve framework maintainability and reduces duplicate Selenium code.
+
+---
+
 ## Page Object Model
 
-The framework separates page interactions from test logic.
+The framework implements the **Page Object Model (POM)** design pattern.
+
+Each major application page has a corresponding Page Object class.
 
 For example:
 
 ```text
 Test Case
-   ↓
+   │
+   ▼
 Page Object
-   ↓
-Reusable BasePage methods
-   ↓
+   │
+   ▼
+Reusable BasePage Methods
+   │
+   ▼
 Selenium WebDriver
-   ↓
+   │
+   ▼
 Web Application
 ```
 
-Page elements are encapsulated inside their respective Page Object classes, while reusable operations such as clicking, typing, visibility checks, and explicit waits are maintained centrally.
+Web elements and page-specific operations are encapsulated inside their respective Page Object classes.
+
+Test classes primarily contain:
+
+- Test workflow
+- Test data
+- Assertions
+- Validation logic
+
+This keeps test cases readable and easier to maintain.
+
+---
 
 ## Data-Driven Testing
+
+The framework supports data-driven testing using **Apache POI and TestNG DataProvider**.
 
 Login test data is maintained in:
 
@@ -140,17 +233,26 @@ Login test data is maintained in:
 src/testData/LoginData.xlsx
 ```
 
-Example structure:
+Example Excel structure:
 
 ```text
 Email | Password | ExpectedResult
 ```
 
-Apache POI reads the Excel data and TestNG `DataProvider` supplies each dataset to the login test.
+Apache POI reads the Excel workbook and TestNG `DataProvider` supplies each dataset to the test method.
 
-The framework supports both positive and negative login scenarios.
+This allows the same Selenium test to execute against multiple combinations of:
 
-## Configuration
+- Valid credentials
+- Invalid email addresses
+- Invalid passwords
+- Expected login results
+
+The test data remains separated from the test logic.
+
+---
+
+## Configuration Management
 
 Application and execution configuration is maintained in:
 
@@ -166,36 +268,85 @@ appUrl=https://tutorialsninja.com/demo/
 gridUrl=http://localhost:4444/wd/hub
 ```
 
+The `executionEnv` property determines whether tests execute using a local browser or Selenium Grid.
+
 Sensitive credentials are intentionally not stored in the configuration file or source code.
 
-## Credential Management
+---
 
-Valid login credentials can be supplied through environment variables:
+## Secure Credential Management
+
+Valid OpenCart credentials are externalized instead of being hardcoded into the framework.
+
+### Environment Variables
+
+The framework supports:
 
 ```text
 OPENCART_USERNAME
 OPENCART_PASSWORD
 ```
 
-Alternatively, Maven system properties can be used.
+### Maven System Properties
 
-Example:
-
-```bash
-mvn clean test -Dopencart.username="YOUR_EMAIL" -Dopencart.password="YOUR_PASSWORD"
-```
-
-> Do not commit real credentials to the repository.
-
-## Running Tests
-
-### Run the complete Maven suite
+Credentials can also be supplied during Maven execution:
 
 ```bash
 mvn clean test -Dopencart.username="YOUR_EMAIL" -Dopencart.password="YOUR_PASSWORD"
 ```
 
-### Run using TestNG
+### GitHub Actions Secrets
+
+For CI execution, credentials are stored securely as GitHub repository secrets:
+
+```text
+OPENCART_USERNAME
+OPENCART_PASSWORD
+```
+
+The GitHub Actions workflow passes these secrets to the test execution environment.
+
+> Never commit real usernames, passwords, tokens, or other sensitive credentials to the repository.
+
+---
+
+## Running Tests Locally
+
+### Prerequisites
+
+Ensure the following are installed:
+
+- Java JDK
+- Maven
+- Git
+- Chrome, Edge, or Firefox
+- IDE such as Eclipse or IntelliJ IDEA
+
+Verify Java:
+
+```bash
+java -version
+```
+
+Verify Maven:
+
+```bash
+mvn -version
+```
+
+---
+
+### Run the Complete Maven Suite
+
+```bash
+mvn clean test -Dopencart.username="YOUR_EMAIL" -Dopencart.password="YOUR_PASSWORD"
+```
+
+Maven executes the configured TestNG test suite and generates the test results.
+
+---
+
+## TestNG Suite Execution
 
 The primary TestNG suite is:
 
@@ -205,23 +356,37 @@ master.xml
 
 It can also be executed directly from an IDE with TestNG support.
 
-### Cross-Browser Execution
-
-Cross-browser configuration is maintained in:
+Additional suite configuration files include:
 
 ```text
 crossBrowser.xml
+grouping.xml
+dockerRun.xml
 ```
 
-The framework currently supports browsers including:
+These XML files provide different execution configurations for the framework.
 
-- Chrome
-- Edge
-- Firefox
+---
+
+## Cross-Browser Testing
+
+The framework supports multiple browsers.
+
+Currently supported browsers include:
+
+- Google Chrome
+- Microsoft Edge
+- Mozilla Firefox
+
+Browser selection can be controlled through TestNG parameters.
+
+Browser-specific WebDriver options are configured dynamically inside the framework.
+
+---
 
 ## Selenium Grid Support
 
-The framework supports remote WebDriver execution through Selenium Grid.
+The framework supports remote WebDriver execution through **Selenium Grid**.
 
 Configure the Grid URL in:
 
@@ -229,15 +394,37 @@ Configure the Grid URL in:
 gridUrl=http://localhost:4444/wd/hub
 ```
 
-and set the execution environment accordingly.
+and configure the execution environment for remote execution.
 
-This allows the same framework to be extended for distributed and containerized browser execution.
+The framework initializes `RemoteWebDriver` when remote execution is selected.
+
+Supported remote platforms include:
+
+```text
+Windows
+Linux
+macOS
+```
+
+Supported browsers include:
+
+```text
+Chrome
+Firefox
+Edge
+```
+
+This design allows the framework to be extended for distributed and containerized browser execution.
+
+---
 
 ## Explicit Wait Strategy
 
-The framework uses reusable explicit waits instead of depending on fixed delays.
+The framework uses Selenium explicit waits to improve synchronization between Selenium WebDriver and dynamic web elements.
 
-Common operations are centralized in `BasePage`, including:
+Reusable operations are maintained centrally.
+
+Common operations include:
 
 ```text
 click()
@@ -246,20 +433,31 @@ getText()
 isDisplayed()
 ```
 
-This improves synchronization and reduces duplicated Selenium code across Page Objects.
+Explicit waits are used before interacting with elements whenever necessary.
+
+This approach helps reduce synchronization failures and avoids unnecessary fixed delays such as `Thread.sleep()`.
+
+---
 
 ## Test Reports
 
-Extent Reports are generated after suite execution.
+The framework uses **Extent Reports** for HTML test reporting.
 
-Reports are stored under:
+Reports are generated under:
 
 ```text
 reports/
 ```
 
-The HTML report provides test execution status including:
+Example generated report:
 
+```text
+TestReport-YYYY.MM.DD.HH.MM.SS.html
+```
+
+The report provides information such as:
+
+- Test execution status
 - Passed tests
 - Failed tests
 - Skipped tests
@@ -267,11 +465,13 @@ The HTML report provides test execution status including:
 - Execution information
 - Screenshots for failed tests
 
-Generated reports are excluded from source control.
+Generated reports are runtime artifacts and are excluded from source control.
+
+---
 
 ## Failure Screenshots
 
-When a test fails, the framework captures a browser screenshot automatically.
+When a test fails, the framework automatically captures a browser screenshot.
 
 Screenshots are generated under:
 
@@ -279,11 +479,21 @@ Screenshots are generated under:
 screenshots/
 ```
 
-These runtime artifacts are excluded from Git using `.gitignore`.
+Screenshot filenames include the test name and timestamp, making failures easier to investigate.
+
+Example:
+
+```text
+TC002_LoginPage_20260916_113831.png
+```
+
+Generated screenshots are excluded from Git using `.gitignore`.
+
+---
 
 ## Logging
 
-Log4j2 is used for execution logging.
+The framework uses **Log4j2** for execution logging.
 
 Logging configuration is maintained in:
 
@@ -291,40 +501,250 @@ Logging configuration is maintained in:
 src/test/resources/log4j2.xml
 ```
 
-Logs help track test execution steps and simplify debugging when failures occur.
+Logging is used to capture important framework activities such as:
+
+- Browser initialization
+- Execution environment
+- Application launch
+- Test execution
+- Browser shutdown
+- Framework events
+
+This simplifies debugging and provides better visibility into automation execution.
+
+---
+
+## CI/CD Integration
+
+The framework is integrated with **GitHub Actions** for continuous integration.
+
+The workflow configuration is maintained in:
+
+```text
+.github/workflows/selenium-test.yml
+```
+
+The CI pipeline automatically executes the Selenium automation suite when configured repository events occur.
+
+### CI Pipeline Flow
+
+```text
+Developer Push
+      │
+      ▼
+GitHub Repository
+      │
+      ▼
+GitHub Actions
+      │
+      ▼
+Setup Java Environment
+      │
+      ▼
+Resolve Maven Dependencies
+      │
+      ▼
+Configure Browser Environment
+      │
+      ▼
+Run Selenium in Headless Chrome
+      │
+      ▼
+Execute TestNG Suite
+      │
+      ▼
+Generate Extent Report
+      │
+      ▼
+Test Results
+```
+
+### Headless Browser Execution
+
+The framework detects the GitHub Actions CI environment and configures Chrome for headless execution.
+
+Typical CI browser arguments include:
+
+```text
+--headless=new
+--no-sandbox
+--disable-dev-shm-usage
+--window-size=1920,1080
+```
+
+This allows Selenium tests to execute on the GitHub-hosted Linux runner without requiring a visible browser window.
+
+---
+
+## GitHub Actions Credential Security
+
+The CI workflow does not contain hardcoded OpenCart credentials.
+
+Instead, GitHub Actions repository secrets are used:
+
+```text
+OPENCART_USERNAME
+OPENCART_PASSWORD
+```
+
+The workflow securely provides these credentials to the test execution environment.
+
+This keeps sensitive information outside:
+
+- Java source code
+- `config.properties`
+- TestNG XML files
+- Git history
+- Public repository files
+
+---
+
+## CI Execution Result
+
+The framework has been successfully executed using GitHub Actions.
+
+Latest verified execution:
+
+```text
+Tests run: 9
+Failures: 0
+Errors: 0
+Skipped: 0
+
+BUILD SUCCESS
+```
+
+Extent Report generation was also successfully completed during CI execution.
+
+This verifies that the framework can execute both locally and in a CI environment.
+
+---
 
 ## Test Design Principles
 
-The framework follows several maintainability practices:
+The framework follows maintainable automation practices:
 
-- Page elements are encapsulated in Page Objects.
-- Test classes focus primarily on test workflow and assertions.
-- Reusable Selenium actions are maintained centrally.
-- Tests are designed to execute independently.
-- Test data is separated from test logic.
-- Sensitive credentials are externalized.
-- Generated reports, logs and screenshots are not committed to source control.
+- Page elements are encapsulated in Page Objects
+- Test classes focus primarily on workflow and assertions
+- Selenium actions are reusable
+- Explicit waits are centralized
+- Test data is separated from test logic
+- Configuration is externalized
+- Credentials are not hardcoded
+- Tests are designed to execute independently
+- Runtime reports are separated from source code
+- Failure screenshots are generated automatically
+- Logging is centralized
+- Maven manages dependencies and execution
+- GitHub Actions provides automated CI execution
 
-## CI/CD
+---
 
-The project is structured for CI/CD execution using Maven.
+## Version Control
 
-GitHub Actions integration will allow the automation suite to execute automatically on repository events such as pushes and pull requests.
+Git and GitHub are used for source-code management.
+
+The repository excludes runtime and local-development artifacts through `.gitignore`.
+
+Examples include:
+
+```text
+target/
+reports/
+screenshots/
+logs/
+.classpath
+.project
+.settings/
+```
+
+This keeps the repository clean and focused on framework source code and configuration.
+
+---
+
+## Current Framework Capabilities
+
+The project currently demonstrates:
+
+**UI Automation**
+- Selenium WebDriver
+- Page Object Model
+- Explicit waits
+- Functional UI validation
+
+**Framework Design**
+- Hybrid framework architecture
+- Reusable components
+- TestNG test management
+- Maven dependency management
+
+**Data-Driven Testing**
+- Apache POI
+- Excel test data
+- TestNG DataProvider
+
+**Execution**
+- Local browser execution
+- Cross-browser support
+- Selenium Grid support
+- Headless CI execution
+
+**Reporting & Debugging**
+- Extent Reports
+- Failure screenshots
+- Log4j2 logging
+
+**DevOps**
+- Git
+- GitHub
+- GitHub Actions
+- CI test execution
+- Secure repository secrets
+
+---
 
 ## Future Enhancements
 
 Planned improvements include:
 
-- GitHub Actions CI pipeline
 - Parallel execution using `ThreadLocal<WebDriver>`
 - Thread-safe Extent Reports
 - Dockerized Selenium Grid execution
 - Additional end-to-end e-commerce scenarios
+- REST Assured API automation integration
+- UI and API combined automation scenarios
 - Enhanced test-data management
+- Improved CI artifact management
+
+---
+
+## Project Highlights
+
+This project demonstrates practical experience with:
+
+- Designing a Selenium automation framework from scratch
+- Implementing Page Object Model
+- Building reusable Selenium components
+- Creating data-driven tests with Excel
+- Managing tests using TestNG
+- Managing dependencies and execution using Maven
+- Implementing positive and negative functional scenarios
+- Configuring cross-browser automation
+- Supporting Selenium Grid execution
+- Generating professional HTML automation reports
+- Capturing screenshots automatically on failures
+- Implementing execution logging
+- Externalizing sensitive test credentials
+- Integrating Selenium automation with GitHub Actions
+- Running browser automation in a headless Linux CI environment
+- Troubleshooting local vs CI execution differences
+
+---
 
 ## Author
 
 **Alfaj Godad**
 
-QA Automation Engineer  
-Selenium WebDriver | Java | TestNG | API Testing | Maven | CI/CD
+**QA Automation Engineer**
+
+Selenium WebDriver | Java | TestNG | Maven | API Testing | Git | GitHub | CI/CD
